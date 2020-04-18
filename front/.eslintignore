@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+scripts/
+config/
+webpack.*.js
+webpack/env.js
+
+src/commons/lib

@@ -1,0 +1,13 @@
+{
+  "python.pythonPath": "venv\\Scripts\\python.exe",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "sqltools.connections": [
+    {
+      "database": "${workspaceFolder}\\instance/pyldapadmin.sqlite",
+      "dialect": "SQLite",
+      "name": "pyldapadmin"
+    }
+  ],
+  "sqltools.useNodeRuntime": true
+}
