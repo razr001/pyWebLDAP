@@ -8,10 +8,10 @@ ADMIN_PW = 'admin'
 SECRET_KEY = 'PIgX28H-sC5c+dShdS08U@#TUL9ZMAu5Tyn'
 
 # 用户自助修改密码相关配置
-CUP_LDAP_HOST = '192.168.234.131'
+CUP_LDAP_HOST = '192.168.111.128'
 CUP_LDAP_BASE = 'dc=my-domain,dc=com'
 CUP_BIND_DN = 'cn=Manager,dc=my-domain,dc=com'
-CUP_BIND_PW = '123456'
+CUP_BIND_PW = 'secret'
 CUP_OBJECT_CLASS = 'person'
 CUP_LOGIN_ATTR = 'cn'
 CUP_FULLNAME_ATTR = 'cn'

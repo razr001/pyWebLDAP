@@ -7,7 +7,7 @@ class LDAP:
 
 	def __init__(self, host):
 		self.server = Server(host, get_info=ALL)
-		self.connect = Connection(self.server, 'cn=Manager,dc=my-domain,dc=com', '123456', auto_bind=True)
+		self.connect = Connection(self.server, 'cn=Manager,dc=my-domain,dc=com', 'secret', auto_bind=True)
 
 
 def get_ldap():

@@ -91,7 +91,7 @@ def entryTree():
         rootEntry = entryDist
     entrysTree(entrysList, rootEntry)      
     return relSuccess([rootEntry])
-  return relSuccess()
+  return relSuccess([{'dn':rootNode}])
 
 # 单个条目信息  
 @bp.route('/entry/info')
