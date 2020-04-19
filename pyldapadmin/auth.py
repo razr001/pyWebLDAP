@@ -1,6 +1,6 @@
 import random
 from flask import Blueprint, request, session
-from .func import relSuccess, relFail 
+from .func import relSuccess, relFail, verifyHash 
 from .AuthException import AuthException
 from .config import URL_PREFIX, ADMIN_NAME, ADMIN_PW
 
@@ -24,7 +24,7 @@ def login():
   adminName = params['username']
   adminPw = params['password']
   
-  if adminName == ADMIN_NAME and adminPw == ADMIN_PW:
+  if adminName == ADMIN_NAME and verifyHash(adminPw, ADMIN_PW): 
     session['login_id'] = random.randint(1000, 2000)
     session.permanent = True
     return relSuccess()
