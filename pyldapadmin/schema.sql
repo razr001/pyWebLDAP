@@ -5,4 +5,5 @@ CREATE TABLE connection(
   port INT NOT NULL, 
   username VARCHAR NOT NULL, 
   userpw VARCHAR NOT NULL, 
-  base VARCHAR NOT NULL);
+  base VARCHAR NOT NULL
+  );

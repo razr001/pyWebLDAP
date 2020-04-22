@@ -10,7 +10,7 @@ def create_app(test_config=None):
         PERMANENT_SESSION_LIFETIME = timedelta(minutes=60),
         SECRET_KEY = SECRET_KEY,
         DATABASE = os.path.join(app.instance_path, 'pyldapadmin.db'),
-        LDAP_HOST = '192.168.111.128',
+        LDAP_HOST = '192.168.234.131',
     )
 
     if test_config:

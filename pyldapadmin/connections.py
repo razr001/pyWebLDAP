@@ -13,11 +13,12 @@ bp = Blueprint('connections', __name__, url_prefix='/connect')
 # add connect
 @bp.route('/add', methods=['POST'])
 def addConnect():
-  host = '192.168.234.131'
-  port = 389
-  username = 'cn=Manager,dc=my-domain,dc=com'
-  password = 'admin'
-  base = 'dc=my-domain,dc=com'
+  params = request.get_json()
+  host = params['host']
+  port = params['port']
+  username = params['username']
+  password = params['password']
+  base = params['base']
 
   db = get_db()
   db.execute('INSERT INTO connection (host, port, username, userpw, base) VALUES (?, ?, ?, ?, ?)', (host, port, username, password, base))
