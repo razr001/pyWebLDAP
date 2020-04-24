@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select, Checkbox } from "antd";
-import { addConnect } from "src/services/ldap";
-import ObjectclassSelect from "./ObjectclassSelect";
-
-const { Option } = Select;
+import { Modal, Form, Input, Checkbox, Button } from "antd";
+import { addConnect, fetchDN } from "src/services/ldap";
 
 const formItemLayout = {
   labelCol: {
@@ -14,11 +11,25 @@ const formItemLayout = {
   }
 };
 
+const BaseInput = ({ onClick, ...props }) => {
+  return (
+    <>
+      <Input style={{ width: "330px" }} {...props} />
+      <Button style={{ marginLeft: "6px" }} onClick={onClick}>
+        fetch
+      </Button>
+    </>
+  );
+};
+
 const AddConnectModal = ({ visible, onOk, onCancel }) => {
   const [form] = Form.useForm();
 
+  const [anonymity, setAnonymity] = useState(false);
+
   const onClose = () => {
     form.resetFields();
+    setAnonymity(false);
   };
 
   const okHandler = values => {
@@ -27,8 +38,18 @@ const AddConnectModal = ({ visible, onOk, onCancel }) => {
     });
   };
 
-  const onAnonymity = value => {
-    console.log("----------------------", value);
+  const onAnonymity = e => {
+    setAnonymity(e.target.checked);
+  };
+
+  const getBaseDN = () => {
+    const host = form.getFieldValue("host");
+    const port = form.getFieldValue("port");
+    fetchDN({ host, port }).then(rel => {
+      form.setFieldsValue({
+        base: rel
+      });
+    });
   };
 
   return (
@@ -41,14 +62,9 @@ const AddConnectModal = ({ visible, onOk, onCancel }) => {
       afterClose={onClose}
       onCancel={onCancel}
       onOk={() => {
-        form
-          .validateFields()
-          .then(values => {
-            okHandler(values);
-          })
-          .catch(info => {
-            console.log("Validate Failed:", info);
-          });
+        form.validateFields().then(values => {
+          okHandler(values);
+        });
       }}
     >
       <Form
@@ -80,7 +96,7 @@ const AddConnectModal = ({ visible, onOk, onCancel }) => {
           label="Base"
           rules={[{ required: true }]}
         >
-          <Input />
+          <BaseInput onClick={getBaseDN} />
         </Form.Item>
         <Form.Item
           key="anonymity"
@@ -94,17 +110,17 @@ const AddConnectModal = ({ visible, onOk, onCancel }) => {
           key="username"
           name="username"
           label="Username"
-          rules={[{ required: true }]}
+          rules={[{ required: !anonymity }]}
         >
-          <Input />
+          <Input disabled={anonymity} />
         </Form.Item>
         <Form.Item
           key="password"
           name="password"
           label="Password"
-          rules={[{ required: true }]}
+          rules={[{ required: !anonymity }]}
         >
-          <Input />
+          <Input disabled={anonymity} />
         </Form.Item>
       </Form>
     </Modal>

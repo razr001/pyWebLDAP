@@ -34,9 +34,8 @@ function request(originUrl, method = "get", params = {}, options = {}) {
         if (response.data.code === 0) {
           return reslove(response.data.data);
         }
-        message.error(response.data.data).then(() => {
-          if (response.data.code === 403) window.location.href = "/login";
-        });
+        message.error(response.data.data);
+        if (response.data.code === 403) window.location.href = "/login";
         reject(response.data);
       });
   });

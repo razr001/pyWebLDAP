@@ -23,6 +23,18 @@ def entrysTree(entryList, parentEntry):
 def info():
   ldap = get_ldap()
   return relSuccess(ldap.server.info.to_json(), True)
+
+@bp.route('/fetch/base')
+def fetchBase():
+  host = request.args.get('host')
+  port = request.args.get('port')
+  server = Server(host, int(port), get_info=ALL)
+  connect = Connection(server, auto_bind=True)
+  if not server.info:
+    return relSuccess()
+
+  dn = str(server.info.raw['namingContexts'][0], encoding="utf-8")
+  return relSuccess(dn)  
   
 @bp.route('/schema')
 def serverSchema():

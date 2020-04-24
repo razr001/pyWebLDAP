@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Select } from "antd";
-import { getObjectclassesAttr } from "src/services/ldap";
+import { getObjectclassesAttr, addEntry } from "src/services/ldap";
 import ObjectclassSelect from "./ObjectclassSelect";
 
 const { Option } = Select;
@@ -71,6 +71,12 @@ const AddEntryModal = ({ visible, onOk, onCancel, targetDN }) => {
     });
   };
 
+  const onOkHandler = values => {
+    addEntry(values).then(() => {
+      onOk();
+    });
+  };
+
   return (
     <Modal
       visible={visible}
@@ -84,7 +90,7 @@ const AddEntryModal = ({ visible, onOk, onCancel, targetDN }) => {
         form
           .validateFields()
           .then(values => {
-            onOk(values);
+            onOkHandler(values);
           })
           .catch(info => {
             console.log("Validate Failed:", info);

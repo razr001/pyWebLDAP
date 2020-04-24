@@ -1,5 +1,9 @@
 import { get, post } from "../common/network";
 
+export function fetchDN(params) {
+  return get("/ldap/fetch/base", params);
+}
+
 export function getEntryTree() {
   return get("/ldap/entry/tree");
 }

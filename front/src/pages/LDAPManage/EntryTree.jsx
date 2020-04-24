@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Tree, Space, Popconfirm, message } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import {
-  getEntryTree,
-  addEntry,
-  removeEntry,
-  moveEntry,
-} from "src/services/ldap";
+import { getEntryTree, removeEntry, moveEntry } from "src/services/ldap";
 import AddEntryModal from "./AddEntryModal";
 import styles from "./EntryTree.less";
 
@@ -112,15 +107,13 @@ const EntryTree = ({ onSelect }) => {
     setEditEnable(false);
   };
 
-  const onSubmit = values => {
+  const onOk = () => {
     if (editEnable) {
       // 编辑
     } else {
-      addEntry(values).then(() => {
-        message.success("新增成功");
-        onCancelAdd();
-        getEntryData();
-      });
+      message.success("新增成功");
+      onCancelAdd();
+      getEntryData();
     }
   };
 
@@ -153,7 +146,7 @@ const EntryTree = ({ onSelect }) => {
       <AddEntryModal
         visible={showAdd}
         onCancel={onCancelAdd}
-        onOk={onSubmit}
+        onOk={onOk}
         targetDN={selectedDN}
         editEnable={editEnable}
       />
