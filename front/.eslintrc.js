@@ -11,6 +11,7 @@ module.exports = {
     jasmine: true
   },
   rules: {
+    "react/display-name": [0],
     "generator-star-spacing": [0],
     "consistent-return": [0],
     "react/forbid-prop-types": [0],

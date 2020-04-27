@@ -29,7 +29,7 @@ def fetchBase():
   host = request.args.get('host')
   port = request.args.get('port')
   server = Server(host, int(port), get_info=ALL)
-  connect = Connection(server, auto_bind=True)
+  Connection(server, auto_bind=True)
   if not server.info:
     return relSuccess()
 

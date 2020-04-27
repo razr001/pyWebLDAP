@@ -39,7 +39,3 @@ export function updateEntry(params) {
 export function changePassword(params) {
   return post("/ldap/change/user/password", params);
 }
-
-export function addConnect(params) {
-  return post("/connect/add", params);
-}

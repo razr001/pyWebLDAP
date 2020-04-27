@@ -17,7 +17,10 @@ const LDAPManage = props => {
     setAddConnectVisible(true);
   };
 
-  const onAdd = () => {};
+  const onConnect = connect => {
+    console.log("-------------------------------", connect);
+    setAddConnectVisible(false);
+  };
 
   const onCancel = () => {
     setAddConnectVisible(false);
@@ -36,8 +39,8 @@ const LDAPManage = props => {
       </Col>
       <AddConnectModal
         visible={addConnectVisible}
-        onOk={onAdd}
         onCancel={onCancel}
+        onConnect={onConnect}
       />
     </Row>
   );

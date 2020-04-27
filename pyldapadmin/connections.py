@@ -14,14 +14,15 @@ bp = Blueprint('connections', __name__, url_prefix='/connect')
 @bp.route('/add', methods=['POST'])
 def addConnect():
   params = request.get_json()
+  anonymity = int(params['anonymity'])
   host = params['host']
-  port = params['port']
-  username = params['username']
-  password = params['password']
+  port = int(params['port'])
+  password = params['password'] if anonymity == 0 else ''
+  username = params['username'] if anonymity == 0 else ''
   base = params['base']
 
   db = get_db()
-  db.execute('INSERT INTO connection (host, port, username, userpw, base) VALUES (?, ?, ?, ?, ?)', (host, port, username, password, base))
+  db.execute('INSERT INTO connection (host, port, username, password, base, anonymity) VALUES (?, ?, ?, ?, ?, ?)', (host, port, username, password, base, anonymity))
   db.commit()
 
   return relSuccess()
@@ -30,7 +31,7 @@ def addConnect():
 @bp.route('/list')
 def connectList():
   db = get_db()
-  rows = db.execute('SELECT * FROM connection').fetchall()
+  rows = db.execute('SELECT * FROM connection ORDER BY id DESC').fetchall()
   return relSuccess(rows)
 
 # connect info
@@ -47,18 +48,20 @@ def connectInfo():
 # update connect 
 @bp.route('/update', methods=['POST'])
 def connectUpdate():
-  connId = request.args.get('id')
+  params = request.get_json()
+  connId = params['id']
+  anonymity = int(params['anonymity'])
+  host = params['host']
+  port = int(params['port'])
+  password = params['password'] if anonymity == 0 else ''
+  username = params['username'] if anonymity == 0 else ''
+  base = params['base']
+
   if not connId:
     return relFail('id is request')
 
-  host = '192.168.234.131'
-  port = 389
-  username = 'cn=Manager,dc=my-domain,dc=com'
-  password = '123456'
-  base = 'dc=my-domain,dc=com'
-
   db = get_db()
-  db.execute('UPDATE connection SET host=?, port=?, username=?, userpw=?, base=? WHERE id=?', (host, port, username, password, base, connId))
+  db.execute('UPDATE connection SET host=?, port=?, username=?, password=?, base=?, anonymity=? WHERE id=?', (host, port, username, password, base, anonymity, connId))
   db.commit()
   return relSuccess()
 

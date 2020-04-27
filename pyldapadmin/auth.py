@@ -10,7 +10,7 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def checkLogin():
   loginPath = URL_PREFIX + '/auth/login'
   changePasswordPath = URL_PREFIX + '/ldap/change/user/password'
-  if request.path == loginPath or request.path == changePasswordPath or request.path.find(URL_PREFIX) == -1:
+  if (request.path == loginPath) or (request.path == changePasswordPath) or (request.path.find(URL_PREFIX) == -1):
     return
 
   loginId = session.get('login_id')
