@@ -24,7 +24,12 @@ function request(originUrl, method = "get", params = {}, options = {}) {
       url: `${API}${originUrl}`,
       params: method === "get" ? params : {},
       data: method !== "get" ? params : {},
-      ...options
+      ...options,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        ...options.headers,
+        ldapId: global.ldapId || ""
+      }
     })
       .catch(err => {
         // delete requrestKeys[key];

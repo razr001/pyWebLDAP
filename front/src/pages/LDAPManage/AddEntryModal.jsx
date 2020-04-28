@@ -86,6 +86,7 @@ const AddEntryModal = ({ visible, onOk, onCancel, targetDN }) => {
       cancelText="Cancel"
       afterClose={onClose}
       onCancel={onCancel}
+      getContainer={false}
       onOk={() => {
         form
           .validateFields()

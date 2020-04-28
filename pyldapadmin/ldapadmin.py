@@ -1,8 +1,8 @@
 import re
 import json
 from ldap3 import Server, Connection, ALL, ObjectDef, AttrDef, Reader, Writer, BASE, LEVEL, ALL_ATTRIBUTES, MODIFY_REPLACE
-from flask import Blueprint, escape, request
-from .ldap import get_ldap
+from flask import Blueprint, escape, request, session
+from .ldap import LDAP, get_ldap
 from .func import relSuccess, relFail, hashPassword, verifyHash
 
 bp = Blueprint('ldapadmin', __name__, url_prefix='/ldap')
@@ -18,6 +18,28 @@ def entrysTree(entryList, parentEntry):
       newList = entryList.copy()
       newList.remove(parentEntry)
       entrysTree(newList, entry)
+
+@bp.route('connect', methods=['POST'])
+def connect():
+  params = request.get_json()
+  host = params['host']
+  port = int(params['port'])       
+  username = params['username']  
+  password = params['password']
+  ldapId = int(params['id'])
+
+  if not host:
+    return relFail('host is request')
+
+  ldapServer = LDAP(host, port, username, password)
+  conn = ldapServer.connection()
+  if not conn:
+    return relFail('connection error')
+
+  ldapServer.save(ldapId)  
+  return relSuccess()  
+
+
 
 @bp.route('/info')
 def info():

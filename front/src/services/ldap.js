@@ -1,5 +1,9 @@
 import { get, post } from "../common/network";
 
+export function connect(params) {
+  return post("/ldap/connect", params);
+}
+
 export function fetchDN(params) {
   return get("/ldap/fetch/base", params);
 }

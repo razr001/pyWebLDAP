@@ -6,7 +6,7 @@ import {
   ApiOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { fetchDN } from "src/services/ldap";
+import { fetchDN, connect } from "src/services/ldap";
 import {
   addConnect,
   getConnections,
@@ -46,6 +46,7 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [editData, setEditData] = useState({});
   const [createLoading, setCreateLoading] = useState(false);
+  const [connectLoading, setConnectLoading] = useState(false);
   const columns = [
     {
       title: "Host",
@@ -85,10 +86,12 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
   ];
 
   useEffect(() => {
-    getConnections().then(data => {
-      setDataSource(data || []);
-    });
-  }, []);
+    if (visible && dataSource.length === 0) {
+      getConnections().then(data => {
+        setDataSource(data || []);
+      });
+    }
+  }, [visible]);
 
   const onClose = () => {
     form.resetFields();
@@ -139,6 +142,18 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
     form.setFieldsValue(data);
   };
 
+  const connectHandler = data => {
+    setConnectLoading(true);
+    connect(data)
+      .then(() => {
+        setConnectLoading(false);
+        onConnect(data);
+      })
+      .catch(() => {
+        setConnectLoading(false);
+      });
+  };
+
   const getBaseDN = () => {
     const host = form.getFieldValue("host");
     const port = form.getFieldValue("port");
@@ -151,6 +166,7 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
 
   return (
     <Modal
+      getContainer={false}
       visible={visible}
       width={650}
       maskClosable={false}
@@ -178,9 +194,10 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
             <Button
               type="primary"
               icon={<ApiOutlined />}
+              loading={connectLoading}
               disabled={selectedRows.length === 0}
               onClick={() => {
-                onConnect(selectedRows[0]);
+                connectHandler(selectedRows[0]);
               }}
             >
               Connection
