@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Checkbox, Button, Table, Space } from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  Checkbox,
+  Button,
+  Table,
+  Space,
+  Popconfirm,
+  message,
+} from "antd";
 import {
   FormOutlined,
   DeleteOutlined,
@@ -11,6 +21,8 @@ import {
   addConnect,
   getConnections,
   updateConnect,
+  delConnect,
+  testConnect,
 } from "src/services/connections";
 
 const formItemLayout = {
@@ -29,7 +41,7 @@ const tailLayout = {
 const BaseInput = ({ onClick, ...props }) => {
   return (
     <>
-      <Input style={{ width: "330px" }} {...props} />
+      <Input style={{ width: "328px" }} {...props} />
       <Button style={{ marginLeft: "6px" }} onClick={onClick}>
         fetch
       </Button>
@@ -77,9 +89,24 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
           >
             <FormOutlined />
           </a>
-          <a>
-            <DeleteOutlined />
-          </a>
+          <Popconfirm
+            title={
+              <div>
+                <div>Delete connection</div>
+                {data.host}?
+              </div>
+            }
+            onConfirm={() => {
+              onRemove(data);
+            }}
+            // onCancel={cancel}
+            okText="Ok"
+            cancelText="Cancel"
+          >
+            <a>
+              <DeleteOutlined />
+            </a>
+          </Popconfirm>
         </Space>
       )
     }
@@ -87,9 +114,7 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
 
   useEffect(() => {
     if (visible && dataSource.length === 0) {
-      getConnections().then(data => {
-        setDataSource(data || []);
-      });
+      getData();
     }
   }, [visible]);
 
@@ -102,6 +127,12 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
     setSelectedRows([]);
   };
 
+  const getData = () => {
+    getConnections().then(data => {
+      setDataSource(data || []);
+    });
+  };
+
   const onAdd = values => {
     const action = editData.id ? updateConnect : addConnect;
     setCreateLoading(true);
@@ -111,13 +142,23 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
         onClose();
         setDataSource([]);
         // reload list
-        getConnections().then(data => {
-          setDataSource(data || []);
-        });
+        getData();
       })
       .catch(() => {
         setCreateLoading(false);
       });
+  };
+
+  const onTest = values => {
+    testConnect(values).then(() => {
+      message.success("Connection successful");
+    });
+  };
+
+  const onRemove = data => {
+    delConnect(data.id).then(() => {
+      getData();
+    });
   };
 
   const onAnonymity = e => {
@@ -264,7 +305,15 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
           </Form.Item>
           <Form.Item {...tailLayout}>
             <Space>
-              <Button>Test connection</Button>
+              <Button
+                onClick={() => {
+                  form.validateFields().then(values => {
+                    onTest(values);
+                  });
+                }}
+              >
+                Test connection
+              </Button>
               <Button onClick={onClose}>Cancel</Button>
               <Button type="primary" htmlType="submit" loading={createLoading}>
                 Submit

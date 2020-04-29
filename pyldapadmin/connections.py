@@ -1,6 +1,7 @@
 import sqlite3
 from flask import Blueprint, escape, request, current_app
 from .func import relSuccess, relFail
+from .ldap import LDAP
 from .db import get_db, init_db
 
 bp = Blueprint('connections', __name__, url_prefix='/connect')
@@ -9,6 +10,23 @@ bp = Blueprint('connections', __name__, url_prefix='/connect')
 # def init():
 #   init_db()
 #   return 'init db'
+@bp.route('/test', methods=['POST'])
+def testConnect():
+  params = request.get_json()
+  host = params['host']
+  port = int(params['port'])
+  anonymity = int(params['anonymity'])       
+  password = params['password'] if anonymity == 0 else ''
+  username = params['username'] if anonymity == 0 else ''
+
+  if not host or not port:
+    return relFail('host and port is request')
+
+  ldapServer = LDAP(host, port, username, password)
+  conn = ldapServer.connection()
+  if not conn:
+    return relFail('Connection error')
+  return relSuccess() 
 
 # add connect
 @bp.route('/add', methods=['POST'])
@@ -68,11 +86,12 @@ def connectUpdate():
 # delete connect
 @bp.route('/del', methods=['POST'])
 def connectDelete():
-  connId = request.args.get('id')
+  params = request.get_json()
+  connId = params['id']
   if not connId:
     return relFail('id is request')
 
   db = get_db()
-  db.execute('DELETE FROM connection WHERE id=?', (connId))
+  db.execute('DELETE FROM connection WHERE id=?', (connId,))
   db.commit()
   return relSuccess()      

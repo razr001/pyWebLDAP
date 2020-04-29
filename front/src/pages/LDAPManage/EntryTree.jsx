@@ -89,12 +89,12 @@ const EntryTree = ({ onSelect }) => {
     setShowAdd(true);
   };
 
-  // const onEdit = e => {
-  //   e.stopPropagation();
-  //   e.nativeEvent.stopImmediatePropagation();
-  //   setShowAdd(true);
-  //   setEditEnable(true);
-  // };
+  const onEdit = e => {
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+    setShowAdd(true);
+    setEditEnable(true);
+  };
 
   const onRemove = data => {
     removeEntry(data.dn).then(() => {

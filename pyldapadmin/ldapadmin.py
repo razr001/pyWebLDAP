@@ -2,7 +2,7 @@ import re
 import json
 from ldap3 import Server, Connection, ALL, ObjectDef, AttrDef, Reader, Writer, BASE, LEVEL, ALL_ATTRIBUTES, MODIFY_REPLACE
 from flask import Blueprint, escape, request, session
-from .ldap import LDAP, get_ldap
+from .ldap import LDAP, get_ldap, close_ldap
 from .func import relSuccess, relFail, hashPassword, verifyHash
 
 bp = Blueprint('ldapadmin', __name__, url_prefix='/ldap')
@@ -19,27 +19,35 @@ def entrysTree(entryList, parentEntry):
       newList.remove(parentEntry)
       entrysTree(newList, entry)
 
-@bp.route('connect', methods=['POST'])
+@bp.route('/connect', methods=['POST'])
 def connect():
   params = request.get_json()
   host = params['host']
   port = int(params['port'])       
   username = params['username']  
   password = params['password']
-  ldapId = int(params['id'])
+  base = params['base']
+  ldapId = params['id']
 
   if not host:
-    return relFail('host is request')
+    return relFail('Host is request')
 
-  ldapServer = LDAP(host, port, username, password)
+  ldapServer = LDAP(host, port, username, password, base)
   conn = ldapServer.connection()
   if not conn:
-    return relFail('connection error')
+    return relFail('Connection error')
 
   ldapServer.save(ldapId)  
-  return relSuccess()  
+  return relSuccess()
 
-
+@bp.route('/disconnect', methods=['POST'])
+def disconnect():
+  params = request.get_json()
+  ldapId = params['id']
+  if not ldapId:
+    return relFail('id is request')
+  close_ldap(ldapId)
+  return relSuccess()    
 
 @bp.route('/info')
 def info():
@@ -50,6 +58,10 @@ def info():
 def fetchBase():
   host = request.args.get('host')
   port = request.args.get('port')
+
+  if not host or not port:
+    return relFail('host and port is request')
+
   server = Server(host, int(port), get_info=ALL)
   Connection(server, auto_bind=True)
   if not server.info:
@@ -78,41 +90,39 @@ def objectclasses():
       objectClassList.append(reObj.group(1))
   return relSuccess(objectClassList)
 
-# 单个objectclass 所有属性
+# 一个或多个objectclass 所有属性
 @bp.route('/objectclass/attr')
 def objectclassAttr():
   ldap = get_ldap()
   conn = ldap.connect
-  objectclassName = request.args.get('name','')
+  objectclassName = request.args.get('name','') # name1,name2,name3
   if objectclassName == '':
     return relFail('objectclass name is request')
-  objCls = ObjectDef([objectclassName], conn)
 
-  attrDist = {
-    'name': objectclassName,
-    'oidInfo': [oid for oid in objCls._oid_info],
-    'must': [],
-    'may': [],
-  }
-
-  for attrName in objCls._attributes:
-    if(attrName.lower() == 'objectclass'):
-      continue
-    attrObj = objCls._attributes[attrName]
-    attrInfo = {'name':attrName, 'superior': attrObj.oid_info.superior, 'syntax':attrObj.oid_info.syntax}
-    if attrObj.mandatory:
-      attrDist['must'].append(attrInfo)
-    else:
-      attrDist['may'].append(attrInfo) 
-
-  return relSuccess(attrDist)
+  objNames = objectclassName.split(',')
+  dataSource = {}
+  for objName in objNames:      
+    objCls = ObjectDef([objName], conn)
+    attrDist = {
+      'name': objName,
+      'oidInfo': [oid for oid in objCls._oid_info],
+      'attribute': [],
+    }
+    for attrName in objCls._attributes:
+      if(attrName.lower() == 'objectclass'):
+        continue
+      attrObj = objCls._attributes[attrName]
+      attrInfo = {'name':attrName, 'superior': attrObj.oid_info.superior if attrObj.oid_info else '', 'syntax':attrObj.oid_info.syntax if attrObj.oid_info else '', 'required': attrObj.mandatory}
+      attrDist['attribute'].append(attrInfo)
+    dataSource[objName] = attrDist
+  return relSuccess(dataSource)
   
 # 条目树
 @bp.route('/entry/tree')
 def entryTree():
   ldap = get_ldap()
   conn = ldap.connect
-  rootNode = 'dc=my-domain,dc=com'
+  rootNode = ldap.base
   rel = conn.search(rootNode, '(objectclass=*)', attributes=['objectclass'])
   if(rel):
     entrysList = []

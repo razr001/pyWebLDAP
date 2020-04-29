@@ -8,12 +8,14 @@ class LDAP:
 	port = 389
 	username = None
 	password = None
+	base = None
 
-	def __init__(self, host, port, username, password):
+	def __init__(self, host, port, username, password, base=None):
 		self.host = host
 		self.port = int(port)
 		self.username = username
 		self.password = password
+		self.base = base
 		self.server = Server(self.host, self.port, get_info=ALL)
 	
 	def __del__(self):
@@ -33,6 +35,7 @@ class LDAP:
 				'port': self.port,
 				'username': self.username,
 				'password': self.password,
+				'base': self.base
 			}
 
 def get_ldap():
@@ -42,8 +45,13 @@ def get_ldap():
 	if not ldapInfo:
 		return None
 
-	ins = LDAP(ldapInfo['host'], ldapInfo['port'], ldapInfo['username'], ldapInfo['password'])
+	ins = LDAP(ldapInfo['host'], ldapInfo['port'], ldapInfo['username'], ldapInfo['password'], ldapInfo['base'])
 	if ins.connection():
 		return ins
-	return None	
+	return None
+
+def close_ldap(ldapId):
+	ldapIdStr = str(ldapId)
+	if session.get('connect_'+ldapIdStr):
+		session.pop('connect_'+ldapIdStr)
 

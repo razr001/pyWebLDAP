@@ -20,34 +20,22 @@ const EntryDetail = ({ dn }) => {
     setUpdateLoading({});
     getEntryDetail(dn)
       .then(data => {
-        const objectClass = data.attributes.objectClass[0];
         // 获取所有属性
-        getObjectclassesAttr(objectClass)
-          .then(attr => {
+        getObjectclassesAttr(data.attributes.objectClass.join())
+          .then(attrs => {
             setLoading(false);
-
             const values = [];
-            // 必要属性
-            attr.must.forEach(attrKey => {
-              values.push({
-                attribute: attrKey.name,
-                value: data.attributes[attrKey.name]
-                  ? data.attributes[attrKey.name][0]
-                  : "",
-                require: true
+            Object.keys(attrs).forEach(key => {
+              attrs[key].attribute.forEach(attrInfo => {
+                values.push({
+                  attribute: attrInfo.name,
+                  value: data.attributes[attrInfo.name]
+                    ? data.attributes[attrInfo.name].join()
+                    : "",
+                  required: attrInfo.required
+                });
               });
             });
-            // 可选属性
-            attr.may.forEach(attrKey => {
-              values.push({
-                attribute: attrKey.name,
-                value: data.attributes[attrKey.name]
-                  ? data.attributes[attrKey.name][0]
-                  : "",
-                require: false
-              });
-            });
-
             setDataSource(values);
           })
           .catch(() => {
@@ -65,7 +53,7 @@ const EntryDetail = ({ dn }) => {
   };
 
   const onEditSubmit = (oldData, value) => {
-    if (oldData.require && !value) {
+    if (oldData.required && !value) {
       message.error(`${oldData.attribute} is require`);
       return;
     }
@@ -101,7 +89,7 @@ const EntryDetail = ({ dn }) => {
       key: "attribute",
       width: "30%",
       // eslint-disable-next-line react/display-name
-      render: (text, data) => (data.require ? <b>{text}</b> : text)
+      render: (text, data) => (data.required ? <b>{text}</b> : text)
     },
     {
       title: "Value",

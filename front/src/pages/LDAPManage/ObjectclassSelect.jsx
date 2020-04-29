@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Select } from "antd";
-import { getObjectclasses } from "src/services/ldap";
 
 const { Option } = Select;
 
-const ObjectclassSelect = props => {
-  const [dataSource, setDataSource] = useState([]);
-  useEffect(() => {
-    getObjectclasses().then(data => {
-      setDataSource(data);
-    });
-  }, []);
+const ObjectclassSelect = ({ dataSource, ...props }) => {
+  // const [dataSource, setDataSource] = useState([]);
+  // useEffect(() => {
+  //   getObjectclasses().then(data => {
+  //     setDataSource(data);
+  //   });
+  // }, []);
 
   return (
     <Select
@@ -20,11 +19,12 @@ const ObjectclassSelect = props => {
       }
       {...props}
     >
-      {dataSource.map(v => (
-        <Option key={v} value={v}>
-          {v}
-        </Option>
-      ))}
+      {dataSource &&
+        dataSource.map(v => (
+          <Option key={v} value={v}>
+            {v}
+          </Option>
+        ))}
     </Select>
   );
 };

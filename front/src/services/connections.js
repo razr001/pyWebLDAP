@@ -11,3 +11,11 @@ export function updateConnect(params) {
 export function getConnections() {
   return get("/connect/list");
 }
+
+export function delConnect(id) {
+  return post("/connect/del", { id });
+}
+
+export function testConnect(params) {
+  return post("/connect/test", params);
+}
