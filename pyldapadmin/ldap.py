@@ -1,5 +1,6 @@
-from ldap3 import Server, Connection, ALL
+from ldap3 import Server, Connection, ALL, Tls, SASL, ANONYMOUS, SIMPLE
 from flask import g, current_app, request, session
+import ssl
 
 class LDAP:
 	server = None
@@ -10,20 +11,26 @@ class LDAP:
 	password = None
 	base = None
 
-	def __init__(self, host, port, username, password, base=None):
+	def __init__(self, host, port, username, password, base=None, method=None,):
 		self.host = host
 		self.port = int(port)
 		self.username = username
 		self.password = password
 		self.base = base
-		self.server = Server(self.host, self.port, get_info=ALL)
+		# ssl tls gssapi
+		self.method = method
+		tls = Tls(validate=ssl.CERT_NONE)
+		self.server = Server(self.host, self.port, get_info=ALL, use_ssl=(method=='ssl'), tls=tls if method=='ssl' or method=='tls' else None)
 	
 	def __del__(self):
 		if self.connect:
 			self.connect.unbind()
 
 	def connection(self):
-		self.connect = Connection(self.server, self.username, self.password) if self.username and self.password else Connection(self.server)
+		authentication = SASL if self.method == 'gssapi' else None
+		self.connect = Connection(self.server, self.username, self.password, authentication=authentication) if self.username and self.password else Connection(self.server, authentication=authentication)
+		if self.method == 'tls':
+			self.connect.start_tls()
 		return self.connect.bind()
 
 	def save(self, ldapId):
@@ -35,7 +42,8 @@ class LDAP:
 				'port': self.port,
 				'username': self.username,
 				'password': self.password,
-				'base': self.base
+				'base': self.base,
+				'method': self.method
 			}
 
 def get_ldap():
@@ -45,7 +53,7 @@ def get_ldap():
 	if not ldapInfo:
 		return None
 
-	ins = LDAP(ldapInfo['host'], ldapInfo['port'], ldapInfo['username'], ldapInfo['password'], ldapInfo['base'])
+	ins = LDAP(ldapInfo['host'], ldapInfo['port'], ldapInfo['username'], ldapInfo['password'], ldapInfo['base'], ldapInfo['method'])
 	if ins.connection():
 		return ins
 	return None

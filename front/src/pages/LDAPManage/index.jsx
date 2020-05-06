@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Tabs } from "antd";
+import { LogoutOutlined } from "@ant-design/icons";
 import { logout } from "src/services/auth";
 import { disconnect } from "src/services/ldap";
 import EntryTree from "./EntryTree";
@@ -70,24 +71,33 @@ const LDAPManage = props => {
 
   return (
     <div>
-      <Button onClick={showAddConnect}>新建连接</Button>
-      <Button onClick={onLogout}>退出</Button>
+      <header className={styles.header}>
+        <Button onClick={showAddConnect} type="link">
+          Connections
+        </Button>
+        <Button
+          onClick={onLogout}
+          icon={<LogoutOutlined style={{ fontSize: "22px" }} />}
+          type="link"
+        />
+      </header>
       <Tabs
         hideAdd
         onChange={onTabChange}
         activeKey={activeKey}
         type="editable-card"
         onEdit={onTabEdit}
+        style={{ marginTop: "6px" }}
       >
         {panes.map(pane => (
           <TabPane tab={pane.host} key={`${pane.id}`} closable>
             <Row className={styles.box}>
-              <Col span={6}>
+              <Col flex="300px">
                 <section className={styles.treeBox}>
                   <EntryTree onSelect={onSelect} />
                 </section>
               </Col>
-              <Col span={18}>
+              <Col flex="auto">
                 <EntryDetail dn={selectDN} />
               </Col>
             </Row>

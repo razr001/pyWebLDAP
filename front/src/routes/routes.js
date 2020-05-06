@@ -1,7 +1,6 @@
 const routes = {
   "/": {
-    component: "/Home",
-    model: ["home"]
+    component: "/LDAPManage"
   },
   "/ldap": {
     component: "/LDAPManage"

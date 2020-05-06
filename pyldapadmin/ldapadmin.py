@@ -22,12 +22,12 @@ def entrysTree(entryList, parentEntry):
 @bp.route('/connect', methods=['POST'])
 def connect():
   params = request.get_json()
-  host = params['host']
-  port = int(params['port'])       
-  username = params['username']  
-  password = params['password']
-  base = params['base']
-  ldapId = params['id']
+  host = params.get('host')
+  port = int(params.get('port'))       
+  username = params.get('username')
+  password = params.get('password')
+  base = params.get('base')
+  ldapId = params.get('id')
 
   if not host:
     return relFail('Host is request')

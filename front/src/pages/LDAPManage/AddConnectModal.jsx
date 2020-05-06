@@ -9,6 +9,7 @@ import {
   Space,
   Popconfirm,
   message,
+  Select,
 } from "antd";
 import {
   FormOutlined,
@@ -37,6 +38,8 @@ const formItemLayout = {
 const tailLayout = {
   wrapperCol: { offset: 6, span: 16 }
 };
+
+const { Option } = Select;
 
 const BaseInput = ({ onClick, ...props }) => {
   return (
@@ -195,6 +198,12 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
       });
   };
 
+  const onSelectMethod = value => {
+    form.setFieldsValue({
+      port: value === "ssl" ? 636 : 389
+    });
+  };
+
   const getBaseDN = () => {
     const host = form.getFieldValue("host");
     const port = form.getFieldValue("port");
@@ -277,6 +286,18 @@ const AddConnectModal = ({ visible, onCancel, onConnect }) => {
             rules={[{ required: true }]}
           >
             <BaseInput onClick={getBaseDN} />
+          </Form.Item>
+          <Form.Item
+            key="method"
+            name="method"
+            label="Method"
+            rules={[{ required: false }]}
+          >
+            <Select allowClear onChange={onSelectMethod}>
+              <Option value="ssl">SSL</Option>
+              <Option value="tls">TLS</Option>
+              <Option value="gssapi">GSSAPI</Option>
+            </Select>
           </Form.Item>
           <Form.Item
             key="anonymity"
