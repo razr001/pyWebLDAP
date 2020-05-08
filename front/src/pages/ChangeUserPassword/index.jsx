@@ -5,15 +5,15 @@ import styles from "./index.less";
 
 const formItemLayout = {
   labelCol: {
-    span: 8
+    span: 10
   },
   wrapperCol: {
-    span: 16
+    span: 14
   }
 };
 
 const tailLayout = {
-  wrapperCol: { offset: 8, span: 16 }
+  wrapperCol: { offset: 10, span: 14 }
 };
 
 const ChangeUserPassword = () => {
@@ -33,46 +33,33 @@ const ChangeUserPassword = () => {
 
   return (
     <Row className={styles.box}>
-      <Form
-        {...formItemLayout}
-        form={form}
-        onFinish={onFinish}
-        // layout="vertical"
-        // name="form_in_modal"
-        // initialValues={{ modifier: 'public' }}
-      >
+      <Form {...formItemLayout} form={form} onFinish={onFinish}>
         <Form.Item
-          label="用户名"
+          label="Username"
           name="username"
-          rules={[{ required: true, message: "Please input your username!" }]}
+          rules={[{ required: true }]}
         >
           <Input />
         </Form.Item>
 
         <Form.Item
-          label="旧密码"
+          label="Old Password"
           name="oldPassword"
-          rules={[
-            { required: true, message: "Please input your old password!" }
-          ]}
+          rules={[{ required: true }]}
         >
           <Input.Password />
         </Form.Item>
         <Form.Item
-          label="新密码"
+          label="New Password"
           name="newPassword"
-          rules={[
-            { required: true, message: "Please input your new password!" }
-          ]}
+          rules={[{ required: true }]}
         >
           <Input.Password />
         </Form.Item>
         <Form.Item
-          label="确认密码"
+          label="Confirm Password"
           name="confirmPassword"
-          rules={[
-            { required: true, message: "Please input your confirm password!" }
-          ]}
+          rules={[{ required: true }]}
         >
           <Input.Password />
         </Form.Item>

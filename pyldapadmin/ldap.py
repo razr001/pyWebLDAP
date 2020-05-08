@@ -1,4 +1,4 @@
-from ldap3 import Server, Connection, ALL, Tls, SASL, ANONYMOUS, SIMPLE
+from ldap3 import Server, Connection, ALL, Tls, SASL, ANONYMOUS, SIMPLE, GSSAPI
 from flask import g, current_app, request, session
 import ssl
 
@@ -14,8 +14,8 @@ class LDAP:
 	def __init__(self, host, port, username, password, base=None, method=None,):
 		self.host = host
 		self.port = int(port)
-		self.username = username
-		self.password = password
+		self.username = username if username else None
+		self.password = password if password else None
 		self.base = base
 		# ssl tls gssapi
 		self.method = method
@@ -28,7 +28,8 @@ class LDAP:
 
 	def connection(self):
 		authentication = SASL if self.method == 'gssapi' else None
-		self.connect = Connection(self.server, self.username, self.password, authentication=authentication) if self.username and self.password else Connection(self.server, authentication=authentication)
+		sasl_mechanism = GSSAPI if self.method == 'gssapi' else None
+		self.connect = Connection(self.server, self.username, self.password, authentication=authentication, sasl_mechanism=sasl_mechanism)
 		if self.method == 'tls':
 			self.connect.start_tls()
 		return self.connect.bind()

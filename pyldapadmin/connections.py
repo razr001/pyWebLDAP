@@ -14,11 +14,10 @@ bp = Blueprint('connections', __name__, url_prefix='/connect')
 def testConnect():
   params = request.get_json()
   host = params['host']
-  port = int(params['port'])
-  anonymity = int(params['anonymity'])       
-  password = params['password'] if anonymity == 0 else ''
-  username = params['username'] if anonymity == 0 else ''
-  method = params['method']
+  port = int(params['port'])   
+  password = params.get('password')
+  username = params.get('username')
+  method = params.get('method')
 
   if not host or not port:
     return relFail('host and port is request')

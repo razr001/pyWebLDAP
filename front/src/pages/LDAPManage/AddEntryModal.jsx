@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select } from "antd";
+import { Modal, Form, Input, Select, Row, Col } from "antd";
 import {
   getObjectclassesAttr,
   addEntry,
@@ -20,9 +20,47 @@ const formItemLayout = {
   }
 };
 
+const UserPassword = props => {
+  const { value } = props;
+  const onChange = val => {
+    if (props.onChange) {
+      props.onChange({
+        ...value,
+        ...val
+      });
+    }
+  };
+  return (
+    <Row gutter={6}>
+      <Col span={12}>
+        <Input
+          onChange={e => {
+            onChange({ password: e.target.value });
+          }}
+          value={value ? value.password : undefined}
+        />
+      </Col>
+      <Col span={12}>
+        <Select
+          onChange={val => {
+            onChange({ encrypt: val });
+          }}
+          allowClear
+          value={value ? value.encrypt : undefined}
+        >
+          <Option value="SSHA">SSHA</Option>
+          <Option value="SMD5">SMD5</Option>
+          <Option value="SHA">SHA</Option>
+          <Option value="MD5">MD5</Option>
+        </Select>
+      </Col>
+    </Row>
+  );
+};
+
 const AddEntryModal = ({ visible, onOk, onCancel, targetDN, editEnable }) => {
   // objectclass attr
-  const [objectclassAttr, setObjectclassAttr] = useState({}); // {objectclass name: {objectclass info...}}
+  const [objectclassAttr, setObjectclassAttr] = useState({}); // {'objectclass name': {objectclass info...}}
   const [dnData, setDnData] = useState({});
   // all ldap server objectclass
   const [allObjectclass, setAllObjectclass] = useState([]);
@@ -157,13 +195,17 @@ const AddEntryModal = ({ visible, onOk, onCancel, targetDN, editEnable }) => {
               { required: attr.required, message: `${attr.name} is require` }
             ]}
           >
-            <Input
-              onBlur={e => {
-                if (attr.required) {
-                  onInput(attr.name, e.target.value);
-                }
-              }}
-            />
+            {attr.name === "userPassword" || attr.name === "unicodePwd" ? (
+              <UserPassword />
+            ) : (
+              <Input
+                onBlur={e => {
+                  if (attr.required) {
+                    onInput(attr.name, e.target.value);
+                  }
+                }}
+              />
+            )}
           </Form.Item>
         );
       }

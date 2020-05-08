@@ -194,6 +194,19 @@ def addEntry():
   del params['targetDN']
   newDN = dn + ',' + targetDN
 
+  userPassword = params.get('userPassword')
+  unicodePwd = params.get('unicodePwd')
+
+  # openLDAP 
+  if userPassword:
+    encrypt = userPassword.get('encrypt')
+    password = userPassword.get('password')
+    params['userPassword'] = hashPassword(password, encrypt)
+
+  # AD
+  if unicodePwd:
+    params['unicodePwd'] = hashPassword(password, None, True)
+
   try:
     rel = conn.add(newDN, objectclass, params)
     if not rel:
