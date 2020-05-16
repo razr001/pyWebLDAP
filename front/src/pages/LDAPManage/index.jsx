@@ -119,7 +119,7 @@ const LDAPManage = props => {
                   <EntryTree onSelect={onSelect} />
                 </section>
               </Col>
-              <Col flex="auto">
+              <Col flex="auto" style={{ overflow: "auto", height: "100%" }}>
                 <EntryDetail dn={selectDN} />
               </Col>
             </Row>
