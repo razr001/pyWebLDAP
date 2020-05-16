@@ -59,10 +59,10 @@ const EntryDetail = ({ dn }) => {
     setUpdateAttributes({ ...updateAttributes });
   };
 
-  const cancelEdit = attribute => {
-    updateAttributes[attribute] = false;
-    setUpdateAttributes({ ...updateAttributes });
-  };
+  // const cancelEdit = attribute => {
+  //   updateAttributes[attribute] = false;
+  //   setUpdateAttributes({ ...updateAttributes });
+  // };
 
   const onEditSubmit = (oldData, value) => {
     if (oldData.required && !value) {
@@ -99,13 +99,9 @@ const EntryDetail = ({ dn }) => {
    * @param {{password:'', encrypt:''}} value
    */
   const onUpdatePassword = value => {
-    if (!value.password && !value.encrypt) {
-      return;
-    }
-
     updateEntry({
       dn,
-      userPassword: value
+      userPassword: value.password ? value : { password: "", encrypt: "" }
     }).then(rel => {
       setShowChangePassword(false);
       // 更新界面上的密码
@@ -154,16 +150,15 @@ const EntryDetail = ({ dn }) => {
                   suffix={
                     updateLoading[data.attribute] ? <LoadingOutlined /> : null
                   }
-                  style={{ width: "70%" }}
                 />
-                <a
+                {/* <a
                   style={{ marginLeft: "12px" }}
                   onClick={() => {
                     cancelEdit(data.attribute);
                   }}
                 >
                   Cancel
-                </a>
+                </a> */}
               </>
             ) : (
               text || (
