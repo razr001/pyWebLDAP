@@ -6,12 +6,14 @@ import {
   getObjectclassesAttr,
   updateEntry,
 } from "src/services/ldap";
+import CreatePasswordModal from "./CreatePasswordModal";
 
 const EntryDetail = ({ dn }) => {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState({});
   const [updateAttributes, setUpdateAttributes] = useState({});
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
     if (!dn) return;
@@ -48,7 +50,17 @@ const EntryDetail = ({ dn }) => {
   }, [dn]);
 
   const onEdit = attribute => {
+    if (attribute === "userPassword") {
+      setShowChangePassword(true);
+      return;
+    }
+
     updateAttributes[attribute] = true;
+    setUpdateAttributes({ ...updateAttributes });
+  };
+
+  const cancelEdit = attribute => {
+    updateAttributes[attribute] = false;
     setUpdateAttributes({ ...updateAttributes });
   };
 
@@ -82,6 +94,31 @@ const EntryDetail = ({ dn }) => {
       });
   };
 
+  /**
+   * 更新密码
+   * @param {{password:'', encrypt:''}} value
+   */
+  const onUpdatePassword = value => {
+    if (!value.password && !value.encrypt) {
+      return;
+    }
+
+    updateEntry({
+      dn,
+      userPassword: value
+    }).then(rel => {
+      setShowChangePassword(false);
+      // 更新界面上的密码
+      for (const item of dataSource) {
+        if (item.attribute === "userPassword") {
+          item.value = rel.userPassword;
+          setDataSource([...dataSource]);
+          break;
+        }
+      }
+    });
+  };
+
   const columns = [
     {
       title: "Attribute",
@@ -104,21 +141,34 @@ const EntryDetail = ({ dn }) => {
             onDoubleClick={() => {
               onEdit(data.attribute, text);
             }}
-            title="Double click edit"
+            title="Double click to edit"
           >
             {updateAttributes[data.attribute] ? (
-              <Input
-                disabled={dn.split(",", 1)[0] === `${data.attribute}=${text}`}
-                defaultValue={text}
-                onBlur={e => {
-                  onEditSubmit(data, e.target.value);
-                }}
-                suffix={
-                  updateLoading[data.attribute] ? <LoadingOutlined /> : null
-                }
-              />
+              <>
+                <Input
+                  disabled={dn.split(",", 1)[0] === `${data.attribute}=${text}`}
+                  defaultValue={text}
+                  onBlur={e => {
+                    onEditSubmit(data, e.target.value);
+                  }}
+                  suffix={
+                    updateLoading[data.attribute] ? <LoadingOutlined /> : null
+                  }
+                  style={{ width: "70%" }}
+                />
+                <a
+                  style={{ marginLeft: "12px" }}
+                  onClick={() => {
+                    cancelEdit(data.attribute);
+                  }}
+                >
+                  Cancel
+                </a>
+              </>
             ) : (
-              text || "--"
+              text || (
+                <span style={{ color: "#EBEBEB" }}>Double click to edit</span>
+              )
             )}
           </div>
         );
@@ -133,13 +183,22 @@ const EntryDetail = ({ dn }) => {
   ];
 
   return (
-    <Table
-      pagination={false}
-      loading={loading}
-      rowKey="attribute"
-      dataSource={dataSource}
-      columns={columns}
-    />
+    <>
+      <Table
+        pagination={false}
+        loading={loading}
+        rowKey="attribute"
+        dataSource={dataSource}
+        columns={columns}
+      />
+      <CreatePasswordModal
+        visible={showChangePassword}
+        onOk={onUpdatePassword}
+        onCancel={() => {
+          setShowChangePassword(false);
+        }}
+      />
+    </>
   );
 };
 

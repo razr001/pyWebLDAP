@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select, Row, Col } from "antd";
+import { Modal, Form, Input, Select } from "antd";
 import {
   getObjectclassesAttr,
   addEntry,
@@ -8,6 +8,7 @@ import {
   // updateEntry,
 } from "src/services/ldap";
 import ObjectclassSelect from "./ObjectclassSelect";
+import UserPasswordInput from "./UserPasswordInput";
 
 const { Option } = Select;
 
@@ -18,44 +19,6 @@ const formItemLayout = {
   wrapperCol: {
     span: 16
   }
-};
-
-const UserPassword = props => {
-  const { value } = props;
-  const onChange = val => {
-    if (props.onChange) {
-      props.onChange({
-        ...value,
-        ...val
-      });
-    }
-  };
-  return (
-    <Row gutter={6}>
-      <Col span={12}>
-        <Input
-          onChange={e => {
-            onChange({ password: e.target.value });
-          }}
-          value={value ? value.password : undefined}
-        />
-      </Col>
-      <Col span={12}>
-        <Select
-          onChange={val => {
-            onChange({ encrypt: val });
-          }}
-          allowClear
-          value={value ? value.encrypt : undefined}
-        >
-          <Option value="SSHA">SSHA</Option>
-          <Option value="SMD5">SMD5</Option>
-          <Option value="SHA">SHA</Option>
-          <Option value="MD5">MD5</Option>
-        </Select>
-      </Col>
-    </Row>
-  );
 };
 
 const AddEntryModal = ({ visible, onOk, onCancel, targetDN, editEnable }) => {
@@ -196,7 +159,7 @@ const AddEntryModal = ({ visible, onOk, onCancel, targetDN, editEnable }) => {
             ]}
           >
             {attr.name === "userPassword" || attr.name === "unicodePwd" ? (
-              <UserPassword />
+              <UserPasswordInput />
             ) : (
               <Input
                 onBlur={e => {

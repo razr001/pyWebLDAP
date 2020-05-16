@@ -3,6 +3,7 @@ import { get, post } from "../common/network";
 export function connect(params) {
   return post("/ldap/connect", params);
 }
+
 export function disconnect(id) {
   return post("/ldap/disconnect", { id });
 }
@@ -43,6 +44,14 @@ export function updateEntry(params) {
   return post("/ldap/update/entry", params);
 }
 
+export function createPassword(params) {
+  return post("/ldap/create/hash", params);
+}
+
+/**
+ * 用户修改密码
+ * @param {*} params
+ */
 export function changePassword(params) {
   return post("/ldap/change/user/password", params);
 }

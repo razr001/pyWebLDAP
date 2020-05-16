@@ -6,6 +6,7 @@ import { disconnect } from "src/services/ldap";
 import EntryTree from "./EntryTree";
 import EntryDetail from "./EntryDetail";
 import AddConnectModal from "./AddConnectModal";
+
 import styles from "./index.less";
 
 const { TabPane } = Tabs;
@@ -15,6 +16,26 @@ const LDAPManage = props => {
   const [addConnectVisible, setAddConnectVisible] = useState(false);
   const [panes, setPanes] = useState([]);
   const [activeKey, setActiveKey] = useState("");
+
+  useEffect(() => {
+    let connectionInfo = sessionStorage.getItem("connectionInfo");
+    if (connectionInfo) {
+      connectionInfo = JSON.parse(connectionInfo);
+      setPanes([...connectionInfo.connections]);
+      onTabChange(connectionInfo.activeKey);
+    }
+  }, []);
+
+  // 缓存tabs信息
+  useEffect(() => {
+    sessionStorage.setItem(
+      "connectionInfo",
+      JSON.stringify({
+        connections: panes,
+        activeKey
+      })
+    );
+  }, [panes, activeKey]);
 
   const onSelect = dn => {
     setSelectDN(dn);
@@ -67,6 +88,7 @@ const LDAPManage = props => {
     logout().then(() => {
       props.history.replace("/login");
     });
+    sessionStorage.clear();
   };
 
   return (

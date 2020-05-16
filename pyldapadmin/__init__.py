@@ -1,7 +1,7 @@
 import os
 from datetime import timedelta
 from flask import Flask, url_for
-from .config import URL_PREFIX, SECRET_KEY
+from .config import SECRET_KEY, URL_PREFIX
 
 def create_app(test_config=None):
     # create and configure the app

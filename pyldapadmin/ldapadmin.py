@@ -269,8 +269,17 @@ def updateEntry():
 
   try:
     values = {}
+    relValues = {}
     for key in params:
-      values[key] = [(MODIFY_REPLACE, [params[key]])]
+      newValue =  ''
+      if key == 'userPassword':
+        newValue = hashPassword(params[key].get('password'), params[key].get('encrypt'))
+      elif key == 'unicodePwd': 
+        newValue = hashPassword(params[key], None, True)
+      else:
+        newValue = params[key]
+      values[key] = [(MODIFY_REPLACE, [newValue])]
+      relValues[key] = newValue
 
     rel = conn.modify(dn, values)
     if not rel:
@@ -278,7 +287,7 @@ def updateEntry():
   except Exception as e:
     return relFail(str(e))
   
-  return relSuccess()        
+  return relSuccess(relValues)        
 
 # 生成ladp规范的hash密码
 @bp.route('/create/hash', methods=['POST'])
