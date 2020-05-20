@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[22],{626:function(o,e,n){o.exports={box:"index_box__qiuwb",treeBox:"index_treeBox__1kYEf"}}}]);

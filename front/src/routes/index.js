@@ -9,7 +9,7 @@ function RouterConfig({ history, app }) {
   const paths = Object.keys(pages);
   return (
     <Router history={history}>
-      <RouterLayout>
+      <RouterLayout history={history}>
         <Switch>
           {paths.map(v => {
             const component = pages[v];

@@ -1,13 +1,3 @@
 {
-  "python.pythonPath": "d:\\Anaconda3\\python.exe",
-  "python.linting.enabled": true,
-  "python.linting.pylintEnabled": true,
-  "sqltools.connections": [
-    {
-      "database": "${workspaceFolder}\\instance/pyldapadmin.sqlite",
-      "dialect": "SQLite",
-      "name": "pyldapadmin"
-    }
-  ],
-  "sqltools.useNodeRuntime": true
+  "python.pythonPath": "venv\\Scripts\\python.exe"
 }

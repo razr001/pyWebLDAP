@@ -99,6 +99,7 @@ def objectclassAttr():
   if objectclassName == '':
     return relFail('objectclass name is request')
 
+  # name1,name2,name3
   objNames = objectclassName.split(',')
   dataSource = {}
   for objName in objNames:      
