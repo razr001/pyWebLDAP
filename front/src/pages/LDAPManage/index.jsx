@@ -114,7 +114,7 @@ const LDAPManage = props => {
         {panes.map(pane => (
           <TabPane tab={pane.host} key={`${pane.id}`} closable>
             <Row className={styles.box}>
-              <Col flex="300px">
+              <Col flex="300px" style={{ overflow: "auto", height: "100%" }}>
                 <section className={styles.treeBox}>
                   <EntryTree onSelect={onSelect} />
                 </section>
