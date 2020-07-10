@@ -1,3 +1,11 @@
+/*
+ * @Author: ouruiting
+ * @Date: 2020-07-10 09:28:38
+ * @LastEditors: ouruiting
+ * @LastEditTime: 2020-07-10 11:33:52
+ * @Description: file content
+ */
+
 /**
  * Created by a on 2017/10/23.
  */
@@ -30,7 +38,7 @@ module.exports = {
     },
 
     "/api": {
-      target: "http://localhost:5000",
+      target: "http://localhost:9999",
       secure: true,
       changeOrigin: true
       // pathRewrite: { "^/api": "" }

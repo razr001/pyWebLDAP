@@ -7,6 +7,7 @@ import {
   updateEntry,
 } from "src/services/ldap";
 import CreatePasswordModal from "./CreatePasswordModal";
+import styles from "./EntryDetail.less";
 
 const EntryDetail = ({ dn }) => {
   const [dataSource, setDataSource] = useState([]);
@@ -20,6 +21,7 @@ const EntryDetail = ({ dn }) => {
     setLoading(true);
     setUpdateAttributes({});
     setUpdateLoading({});
+    // 获取明细数据
     getEntryDetail(dn)
       .then(data => {
         // 获取所有属性
@@ -28,6 +30,11 @@ const EntryDetail = ({ dn }) => {
             setLoading(false);
             const values = [];
             Object.keys(attrs).forEach(key => {
+              values.push({
+                attribute: key,
+                isObjclass: true,
+                value: ""
+              });
               attrs[key].attribute.forEach(attrInfo => {
                 values.push({
                   attribute: attrInfo.name,
@@ -122,7 +129,17 @@ const EntryDetail = ({ dn }) => {
       key: "attribute",
       width: "30%",
       // eslint-disable-next-line react/display-name
-      render: (text, data) => (data.required ? <b>{text}</b> : text)
+      render: (text, data) => {
+        if (data.isObjclass) {
+          return {
+            children: <div style={{ textAlign: "center" }}>[{text}]</div>,
+            props: {
+              colSpan: 3
+            }
+          };
+        }
+        return data.required ? <b>{text}</b> : text;
+      }
     },
     {
       title: "Value",
@@ -131,6 +148,15 @@ const EntryDetail = ({ dn }) => {
       width: "40%",
       // eslint-disable-next-line react/display-name
       render: (text, data) => {
+        if (data.isObjclass) {
+          return {
+            children: text,
+            props: {
+              colSpan: 0
+            }
+          };
+        }
+
         return (
           <div
             style={{ width: "100%", height: "100%" }}
@@ -173,7 +199,18 @@ const EntryDetail = ({ dn }) => {
       title: "Type",
       dataIndex: "type",
       key: "type",
-      width: "30%"
+      width: "30%",
+      render: (text, data) => {
+        if (data.isObjclass) {
+          return {
+            children: text,
+            props: {
+              colSpan: 0
+            }
+          };
+        }
+        return text;
+      }
     }
   ];
 
@@ -185,6 +222,9 @@ const EntryDetail = ({ dn }) => {
         rowKey="attribute"
         dataSource={dataSource}
         columns={columns}
+        rowClassName={record => {
+          if (record.isObjclass) return styles.objectclassRow;
+        }}
       />
       <CreatePasswordModal
         visible={showChangePassword}

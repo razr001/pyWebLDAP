@@ -1,3 +1,10 @@
+'''
+@Author: ouruiting
+@Date: 2020-07-10 09:28:38
+@LastEditors: ouruiting
+@LastEditTime: 2020-07-10 13:44:47
+@Description: file content
+'''
 
 # web login name
 ADMIN_NAME = 'admin'
@@ -8,12 +15,12 @@ ADMIN_PW = 'admin'
 SECRET_KEY = 'PIgX28H-sC5c+dShdS08U@#TUL9ZMAu5Tyn'
 
 # 用户自助修改密码相关配置
-CUP_LDAP_HOST = '192.168.111.128'
-CUP_LDAP_BASE = 'dc=my-domain,dc=com'
-CUP_BIND_DN = 'cn=Manager,dc=my-domain,dc=com'
-CUP_BIND_PW = 'secret'
-CUP_OBJECT_CLASS = 'person'
-CUP_LOGIN_ATTR = 'cn'
+CUP_LDAP_HOST = '192.168.5.100'
+CUP_LDAP_BASE = 'dc=cnabc-inc,dc=com'
+CUP_BIND_DN = 'cn=admin,dc=cnabc-inc,dc=com'
+CUP_BIND_PW = 'iYI0H1S#tweQD!7'
+CUP_OBJECT_CLASS = 'posixAccount'
+CUP_LOGIN_ATTR = 'uid'
 CUP_FULLNAME_ATTR = 'cn'
 
 # MD5, SHA, SMD5, SSHA

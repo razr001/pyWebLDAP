@@ -24,8 +24,9 @@ const ChangeUserPassword = () => {
       message.error("Confirm your password");
       return;
     }
-    changePassword(values).then(rel => {
-      console.log(rel);
+    changePassword(values).then(() => {
+      message.success("Password changed");
+      form.resetFields();
     });
   };
 
