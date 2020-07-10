@@ -1,0 +1,19 @@
+{
+  "presets": ["@babel/preset-react", "@babel/preset-env"],
+  "plugins": [
+    "syntax-dynamic-import",
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-proposal-object-rest-spread",
+    ["@babel/plugin-proposal-decorators", {"legacy": true}],
+    ["@babel/plugin-proposal-class-properties", {
+      "loose": true
+    }],
+    [
+      "import", {
+        "libraryName": "antd",
+        "libraryDirectory": "es",
+        "style": true
+      }
+    ]
+  ]
+}
